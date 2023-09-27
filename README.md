@@ -1,2 +1,2 @@
 # algorithm
-learn algorithm
+learn algorithm  /ˈælɡərɪðəm/
