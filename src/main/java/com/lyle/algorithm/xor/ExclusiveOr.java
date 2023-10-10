@@ -10,6 +10,12 @@ package com.lyle.algorithm.xor;
 public class ExclusiveOr {
 
     public static void main(String[] args) {
+         int a = 0b1010111100;
+        //1010111100 (700)
+        //0101000011
+        //0101000100
+        //0000000100
+        System.out.println(rightmost1(a));
 
     }
 
@@ -34,8 +40,24 @@ public class ExclusiveOr {
      * 数组中交换元素时候 i 和 j 千万不能相等。否则数据抹零
      */
     private static void swap(int[] arr, int i, int j){
+        if(i == j){
+            return;
+        }
         arr[i] = arr[i] ^ arr[j];
         arr[j] = arr[i] ^ arr[j];
         arr[i] = arr[i] ^ arr[j];
+    }
+
+    /**
+     * 提取出最右侧的1
+     *
+     * int a = 0b1010111100;
+     *         //1010111100 (700)
+     *         //0101000011
+     *         //0101000100
+     *         //0000000100
+     */
+    public static int rightmost1(int source){
+        return source & (~source + 1);
     }
 }
