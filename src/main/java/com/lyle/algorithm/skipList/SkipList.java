@@ -3,6 +3,9 @@ package com.lyle.algorithm.skipList;
 import java.util.Random;
 import java.util.Stack;
 
+/**
+ * https://zhuanlan.zhihu.com/p/339750543
+ */
 class SkipNode<T> {
     int key;
     T value;
