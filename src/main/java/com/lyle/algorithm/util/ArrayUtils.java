@@ -1,12 +1,11 @@
 package com.lyle.algorithm.util;
 
+import java.util.Arrays;
+
 public class ArrayUtils {
 
     public static void printArr(int[] arr){
-        for (int t : arr) {
-            System.out.print(t + " ");
-        }
-        System.out.println();
+        System.out.println(Arrays.toString(arr));
     }
 
 }
