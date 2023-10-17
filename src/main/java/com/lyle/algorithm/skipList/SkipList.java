@@ -4,7 +4,7 @@ import java.util.Random;
 import java.util.Stack;
 
 /**
- * https://zhuanlan.zhihu.com/p/339750543
+ * <a href="https://zhuanlan.zhihu.com/p/339750543">参考地址</a>
  */
 class SkipNode<T> {
     int key;
@@ -12,14 +12,13 @@ class SkipNode<T> {
     SkipNode<T> right, down;//左右上下四个方向的指针
 
     /**
-     * @param key key
+     * @param key   key
      * @param value value
      */
     public SkipNode(int key, T value) {
         this.key = key;
         this.value = value;
     }
-
 }
 
 public class SkipList<T> {
@@ -39,32 +38,26 @@ public class SkipList<T> {
         while (team != null) {
             if (team.key == key) {
                 return team;
-            } else if (team.right == null)//右侧没有了，只能下降
-            {
+            } else if (team.right == null) {//右侧没有了，只能下降
                 team = team.down;
-            } else if (team.right.key > key)//需要下降去寻找
-            {
+            } else if (team.right.key > key) {//需要下降去寻找
                 team = team.down;
-            } else //右侧比较小向右
-            {
+            } else {//右侧比较小向右
                 team = team.right;
             }
         }
         return null;
     }
 
-    public void delete(int key)//删除不需要考虑层数
-    {
+    public void delete(int key) {//删除不需要考虑层数
         SkipNode<T> team = headNode;
         while (team != null) {
             if (team.right == null) {//右侧没有了，说明这一层找到，没有只能下降
                 team = team.down;
-            } else if (team.right.key == key)//找到节点，右侧即为待删除节点
-            {
+            } else if (team.right.key == key) {//找到节点，右侧即为待删除节点
                 team.right = team.right.right;//删除右侧节点
                 team = team.down;//向下继续查找删除
-            } else if (team.right.key > key)//右侧已经不可能了，向下
-            {
+            } else if (team.right.key > key) {//右侧已经不可能了，向下
                 team = team.down;
             } else { //节点还在右侧
                 team = team.right;
@@ -73,28 +66,22 @@ public class SkipList<T> {
     }
 
     public void add(SkipNode<T> node) {
-
         int key = node.key;
         SkipNode<T> findNode = search(key);
-        if (findNode != null)//如果存在这个key的节点
-        {
+        if (findNode != null) {//如果存在这个key的节点
             findNode.value = node.value;
             return;
         }
-
         Stack<SkipNode<T>> stack = new Stack<>();//存储向下的节点，这些节点可能在右侧插入节点
         SkipNode<T> team = headNode;//查找待插入的节点   找到最底层的哪个节点。
         while (team != null) {//进行查找操作
-            if (team.right == null)//右侧没有了，只能下降
-            {
+            if (team.right == null) {//右侧没有了，只能下降
                 stack.add(team);//将曾经向下的节点记录一下
                 team = team.down;
-            } else if (team.right.key > key)//需要下降去寻找
-            {
+            } else if (team.right.key > key) {//需要下降去寻找
                 stack.add(team);//将曾经向下的节点记录一下
                 team = team.down;
-            } else //向右
-            {
+            } else {//向右
                 team = team.right;
             }
         }
@@ -109,9 +96,7 @@ public class SkipList<T> {
             downNode = nodeTeam;//标记新的节点下次使用
             if (team.right == null) {//右侧为null 说明插入在末尾
                 team.right = nodeTeam;
-            }
-            //水平方向处理
-            else {//右侧还有节点，插入在两者之间
+            } else {//右侧还有节点，插入在两者之间
                 nodeTeam.right = team.right;
                 team.right = nodeTeam;
             }
@@ -122,8 +107,7 @@ public class SkipList<T> {
             if (num > 0.5)//运气不好结束
                 break;
             level++;
-            if (level > highLevel)//比当前最大高度要高但是依然在允许范围内 需要改变head节点
-            {
+            if (level > highLevel){
                 highLevel = level;
                 //需要创建一个新的节点
                 SkipNode<T> highHeadNode = new SkipNode<>(Integer.MIN_VALUE, null);
@@ -153,7 +137,6 @@ public class SkipList<T> {
                     enumLast = enumLast.right;
                     System.out.printf("%-5s", "");
                 }
-
             }
             teamNode = teamNode.down;
             System.out.println();
@@ -166,8 +149,8 @@ public class SkipList<T> {
             list.add(new SkipNode<>(i, 666));
         }
         list.printList();
-        list.delete(4);
-        list.delete(8);
-        list.printList();
+        //list.delete(4);
+        //list.delete(8);
+        //list.printList();
     }
 }
