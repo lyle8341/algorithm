@@ -22,19 +22,19 @@ class SkipNode<T> {
 }
 
 public class SkipList<T> {
-    SkipNode<T> headNode;//头节点，入口
-    int highLevel;//层数
+    SkipNode<T> entrypoint;//头节点，入口
+    int layer;//层数
     Random random;// 用于投掷硬币
     final int MAX_LEVEL = 32;//最大的层
 
     SkipList() {
         random = new Random();
-        headNode = new SkipNode<>(Integer.MIN_VALUE, null);
-        highLevel = 0;
+        entrypoint = new SkipNode<>(Integer.MIN_VALUE, null);
+        layer = 0;
     }
 
     public SkipNode<T> search(int key) {
-        SkipNode<T> team = headNode;
+        SkipNode<T> team = entrypoint;
         while (team != null) {
             if (team.key == key) {
                 return team;
@@ -50,7 +50,7 @@ public class SkipList<T> {
     }
 
     public void delete(int key) {//删除不需要考虑层数
-        SkipNode<T> team = headNode;
+        SkipNode<T> team = entrypoint;
         while (team != null) {
             if (team.right == null) {//右侧没有了，说明这一层找到，没有只能下降
                 team = team.down;
@@ -65,15 +65,15 @@ public class SkipList<T> {
         }
     }
 
-    public void add(SkipNode<T> newNode) {
-        int key = newNode.key;
+    public void add(SkipNode<T> node) {
+        int key = node.key;
         SkipNode<T> findNode = search(key);
         if (findNode != null) {//如果存在这个key的节点
-            findNode.value = newNode.value;
+            findNode.value = node.value;
             return;
         }
         Stack<SkipNode<T>> stack = new Stack<>();//存储向下的节点，这些节点可能在右侧插入节点
-        SkipNode<T> temp = headNode;//查找待插入的节点   找到最底层的哪个节点。
+        SkipNode<T> temp = entrypoint;//查找待插入的节点   找到最底层的哪个节点。
         while (temp != null) {//进行查找操作
             if (temp.right == null) {//右侧没有了，只能下降
                 stack.add(temp);//将曾经向下的节点记录一下
@@ -85,41 +85,40 @@ public class SkipList<T> {
                 temp = temp.right;
             }
         }
-
-        int level = 1;//当前层数，从第一层添加(第一层必须添加，先添加再判断)
+        int currentLayer = 1;//当前层数，从第一层添加(第一层必须添加，先添加再判断)
         SkipNode<T> downNode = null;//保持前驱节点(即down的指向，初始为null)
         while (!stack.isEmpty()) {
             //在该层插入node
             temp = stack.pop();//抛出待插入的左侧节点
-            SkipNode<T> nodeTeam = new SkipNode<>(newNode.key, newNode.value);//节点需要重新创建
-            nodeTeam.down = downNode;//处理竖方向
-            downNode = nodeTeam;//标记新的节点下次使用
+            SkipNode<T> insertNode = new SkipNode<>(node.key, node.value);//节点需要重新创建，因为在循环中
+            insertNode.down = downNode;//处理竖方向
+            downNode = insertNode;//标记新的节点下次使用
             if (temp.right == null) {//右侧为null 说明插入在末尾
-                temp.right = nodeTeam;
+                temp.right = insertNode;
             } else {//右侧还有节点，插入在两者之间
-                nodeTeam.right = temp.right;
-                temp.right = nodeTeam;
+                insertNode.right = temp.right;
+                temp.right = insertNode;
             }
             //考虑是否需要向上
-            if (level > MAX_LEVEL)//已经到达最高级的节点啦
+            if (currentLayer > MAX_LEVEL)//已经到达最高级的节点啦
                 break;
             double num = random.nextDouble();//[0-1]随机数
             if (num > 0.5)//运气不好结束
                 break;
-            level++;
-            if (level > highLevel){
-                highLevel = level;
+            currentLayer++;
+            if (currentLayer > layer){
+                layer = currentLayer;
                 //需要创建一个新的节点
-                SkipNode<T> highHeadNode = new SkipNode<>(Integer.MIN_VALUE, null);
-                highHeadNode.down = headNode;
-                headNode = highHeadNode;//改变head
-                stack.add(headNode);//下次抛出head
+                SkipNode<T> newEntryPoint = new SkipNode<>(Integer.MIN_VALUE, null);
+                newEntryPoint.down = entrypoint;
+                entrypoint = newEntryPoint;//改变head
+                stack.add(entrypoint);//下次抛出head
             }
         }
     }
 
     public void printList() {
-        SkipNode<T> temp = headNode;
+        SkipNode<T> temp = entrypoint;
         SkipNode<T> last = temp;
         //last 指向最后一层的head
         while (last.down != null) {
@@ -146,7 +145,7 @@ public class SkipList<T> {
 
     public static void main(String[] args) {
         SkipList<Integer> list = new SkipList<>();
-        for (int i = 1; i < 20; i++) {
+        for (int i = 1; i < 5; i++) {
             list.add(new SkipNode<>(i, 666));
         }
         list.printList();
