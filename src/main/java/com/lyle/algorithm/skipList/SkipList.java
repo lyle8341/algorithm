@@ -65,24 +65,24 @@ public class SkipList<T> {
         }
     }
 
-    public void add(SkipNode<T> node) {
-        int key = node.key;
+    public void add(SkipNode<T> newNode) {
+        int key = newNode.key;
         SkipNode<T> findNode = search(key);
         if (findNode != null) {//如果存在这个key的节点
-            findNode.value = node.value;
+            findNode.value = newNode.value;
             return;
         }
         Stack<SkipNode<T>> stack = new Stack<>();//存储向下的节点，这些节点可能在右侧插入节点
-        SkipNode<T> team = headNode;//查找待插入的节点   找到最底层的哪个节点。
-        while (team != null) {//进行查找操作
-            if (team.right == null) {//右侧没有了，只能下降
-                stack.add(team);//将曾经向下的节点记录一下
-                team = team.down;
-            } else if (team.right.key > key) {//需要下降去寻找
-                stack.add(team);//将曾经向下的节点记录一下
-                team = team.down;
+        SkipNode<T> temp = headNode;//查找待插入的节点   找到最底层的哪个节点。
+        while (temp != null) {//进行查找操作
+            if (temp.right == null) {//右侧没有了，只能下降
+                stack.add(temp);//将曾经向下的节点记录一下
+                temp = temp.down;
+            } else if (temp.right.key > key) {//需要下降去寻找
+                stack.add(temp);//将曾经向下的节点记录一下
+                temp = temp.down;
             } else {//向右
-                team = team.right;
+                temp = temp.right;
             }
         }
 
@@ -90,15 +90,15 @@ public class SkipList<T> {
         SkipNode<T> downNode = null;//保持前驱节点(即down的指向，初始为null)
         while (!stack.isEmpty()) {
             //在该层插入node
-            team = stack.pop();//抛出待插入的左侧节点
-            SkipNode<T> nodeTeam = new SkipNode<>(node.key, node.value);//节点需要重新创建
+            temp = stack.pop();//抛出待插入的左侧节点
+            SkipNode<T> nodeTeam = new SkipNode<>(newNode.key, newNode.value);//节点需要重新创建
             nodeTeam.down = downNode;//处理竖方向
             downNode = nodeTeam;//标记新的节点下次使用
-            if (team.right == null) {//右侧为null 说明插入在末尾
-                team.right = nodeTeam;
+            if (temp.right == null) {//右侧为null 说明插入在末尾
+                temp.right = nodeTeam;
             } else {//右侧还有节点，插入在两者之间
-                nodeTeam.right = team.right;
-                team.right = nodeTeam;
+                nodeTeam.right = temp.right;
+                temp.right = nodeTeam;
             }
             //考虑是否需要向上
             if (level > MAX_LEVEL)//已经到达最高级的节点啦
@@ -119,26 +119,27 @@ public class SkipList<T> {
     }
 
     public void printList() {
-        SkipNode<T> teamNode = headNode;
-        SkipNode<T> last = teamNode;
+        SkipNode<T> temp = headNode;
+        SkipNode<T> last = temp;
+        //last 指向最后一层的head
         while (last.down != null) {
             last = last.down;
         }
-        while (teamNode != null) {
-            SkipNode<T> enumNode = teamNode.right;
-            SkipNode<T> enumLast = last.right;
+        while (temp != null) {
+            SkipNode<T> tr = temp.right;
+            SkipNode<T> lr = last.right;
             System.out.printf("%-8s", "head->");
-            while (enumLast != null && enumNode != null) {
-                if (enumLast.key == enumNode.key) {
-                    System.out.printf("%-5s", enumLast.key + "->");
-                    enumLast = enumLast.right;
-                    enumNode = enumNode.right;
-                } else {
-                    enumLast = enumLast.right;
+            while (lr != null && tr != null) {//先是第一层和最后一层处理，而后第二层和最后一层处理...
+                if (lr.key == tr.key) {
+                    System.out.printf("%-5s", tr.key + "->");
+                    lr = lr.right;
+                    tr = tr.right;
+                } else {//两个不在一个纵向时
+                    lr = lr.right;
                     System.out.printf("%-5s", "");
                 }
             }
-            teamNode = teamNode.down;
+            temp = temp.down;
             System.out.println();
         }
     }
